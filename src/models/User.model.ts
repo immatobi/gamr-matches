@@ -56,8 +56,6 @@ interface IUserDoc extends IUserModel, mongoose.Document {
 	// relationships
 	country: mongoose.Schema.Types.ObjectId | any;
 	roles: Array<mongoose.Schema.Types.ObjectId | any>;
-	kyc: mongoose.Schema.Types.ObjectId | any;
-	verification: mongoose.Schema.Types.ObjectId | any;
 
     // time stamps
     createdAt: string;
@@ -151,11 +149,6 @@ const UserSchema = new mongoose.Schema(
 			default: false
 		},
 
-        isActivated: {
-			type: Boolean,
-			default: false
-		},
-
         isAdmin: {
 			type: Boolean,
 			default: false
@@ -193,16 +186,6 @@ const UserSchema = new mongoose.Schema(
 				required: true,
 			},
 		],
-
-		kyc: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Kyc',
-		},
-
-		verification: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Verification'
-        },
 
     },
     {

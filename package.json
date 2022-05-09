@@ -35,7 +35,7 @@
   "license": "MIT",
   "homepage": "https://bitbucket.org/xpresschain/auth.bd#readme",
   "dependencies": {
-    "@btffamily/xpcommon": "^1.0.6",
+    "@btffamily/xpcommon": "^1.0.7",
     "@google-cloud/storage": "^5.16.0",
     "@sendgrid/mail": "^7.4.6",
     "@types/app-root-path": "^1.2.4",

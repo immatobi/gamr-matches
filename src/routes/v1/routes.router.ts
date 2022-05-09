@@ -4,7 +4,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import authRoutes from './routers/auth.router'
 import emailRoutes from './routers/email.router'
 import userRoutes from './routers/user.router'
-import annRoutes from './routers/announcement.router'
+import countryRoutes from './routers/country.router'
+import languageRoutes from './routers/language.router'
 
 
 // create router
@@ -13,8 +14,9 @@ const router = express.Router();
 // define routes
 router.use('/auth', authRoutes);
 router.use('/emails', emailRoutes);
-router.use('/announcements', annRoutes);
 router.use('/users', userRoutes);
+router.use('/countries', countryRoutes);
+router.use('/language', languageRoutes);
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
 
@@ -23,7 +25,7 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
         errors: [],
         message: 'successful',
         data: {
-            name: 'xpresschain-identity-service',
+            name: 'gamr-matches-app',
             version: '1.0.0'
         },
         status: 200

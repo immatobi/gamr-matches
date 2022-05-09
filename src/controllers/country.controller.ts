@@ -49,7 +49,7 @@ export const getCountry = asyncHandler(async (req: Request, res: Response, next:
     }
 
 	// cache data
-	await redis.keepData({ key: computeKey(process.env.NODE_ENV, CacheKeys.Bank), value: { data: country }}, (15 * 86400));  // expire in 15 days
+	await redis.keepData({ key: computeKey(process.env.NODE_ENV, CacheKeys.Country), value: { data: country }}, (15 * 86400));  // expire in 15 days
 
     res.status(200).json({
         error: false,

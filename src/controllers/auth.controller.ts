@@ -1,12 +1,11 @@
 import crypto from 'crypto';
-import mongoose, { ObjectId, Model } from 'mongoose';
+import mongoose from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
 import ErrorResponse from '../utils/error.util';
 import { sendGrid } from '../utils/email.util';
 import { asyncHandler, strIncludesEs6, strToArrayEs6, isString } from '@btffamily/xpcommon'
 import { generate } from '../utils/random.util';
 import { userLogger } from '../config/wiston.config';
-import { sendSMS } from '../utils/aft-sms.util';
 
 import dayjs from 'dayjs'
 import customparse from 'dayjs/plugin/customParseFormat';
@@ -15,11 +14,6 @@ dayjs.extend(customparse);
 // models
 import User from '../models/User.model'
 import Role from '../models/Role.model'
-
-// nats 
-import nats from '../events/nats';
-import UserCreated from '../events/publishers/user-created';
-import Verification from '../models/Verification.model';
 
 
 declare global {
@@ -99,21 +93,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
 		isActive: true
     });
 
-	// create verification
-	const verification = await Verification.create({
-
-		basic: 'pending',
-		ID: 'pending',
-		address: 'pending',
-		face: 'pending',
-		sms: false,
-		email: true,
-		user: user._id
-
-	})
-
 	user.roles.push(role._id);
-	user.verification = verification._id;
 	await user.save();
 
     // send emails, publish nats and initialize notification
@@ -157,9 +137,6 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
             }
             await sendGrid(activateData);
 
-			// publish nats
-			await new UserCreated(nats.client).publish({ user: user, userType: user.userType, phoneCode: phoneCode });
-
             // send response to client
             res.status(200).json({
                 error: false,
@@ -192,7 +169,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
 // @access      Public
 export const login = asyncHandler(async (req: Request, res:Response, next: NextFunction) => {
 
-	const { email, password, code } = req.body;
+	const { email, password } = req.body;
 
 	// validate email and password
 	if(!email && !password){
@@ -210,7 +187,7 @@ export const login = asyncHandler(async (req: Request, res:Response, next: NextF
 	}
 
 	// check for user
-	const user = await User.findOne({ email: email }).select('+password +passwordType').populate([{path: 'verification'}]);
+	const user = await User.findOne({ email: email }).select('+password +passwordType');
 
 	if(!user){
 		return next(new ErrorResponse('Error', 403, ['invalid credentials']))
@@ -251,105 +228,15 @@ export const login = asyncHandler(async (req: Request, res:Response, next: NextF
 		return next(new ErrorResponse('Invalid credentials', 403, ['invalid credentials']))
 	}
 
-	if(!user.isSuper){
+	user.loginLimit = 0;
+	user.isLocked = false;
+	await user.save();
 
-		if(!code && !user.verification.email && !user.verification.sms){
+	// save request user object
+	req.user = user;
 
-			user.emailCode = undefined;
-			user.emailCodeExpire = undefined;
-			user.loginLimit = 0;
-			user.isLocked = false;
-			await user.save();
-
-			// save request user object
-			req.user = user;
-		
-			const message = 'successful';
-			sendTokenResponse(user, message, 200, res);
-
-		}
-
-		// generate email verification code
-		if(!code && user.verification.email){
-
-			// generate otp code
-			const gencode = await generate(6, false);
-			user.emailCode = gencode.toString();
-			user.emailCodeExpire = Date.now() + 30 * 60 * 1000; // 30 minutes // generates timestamp
-			await user.save();
-
-			// send welcome email data
-			let emailData = {
-				template: 'email-verify',
-				email: user.email,
-				preheaderText: 'welcome',
-				emailTitle: 'Email Verification',
-				emailSalute: `Hello ${user.firstName},`,
-				bodyOne: `
-				Please use the code below to verify your email.
-				If this is not you, reach out to us at hell@expresschain.com and ignore this email.
-				`,
-				bodyTwo: gencode,
-				fromName: process.env.FROM_NAME
-			}
-			
-			await sendGrid(emailData);
-
-			res.status(206).json({
-				error: false,
-				errors: ['email verification is required'],
-				data: null,
-				message: 'successful',
-				status: 206
-			})
-
-		}
-
-		if(code){
-
-			// check for email verification
-			if(user.verification.email){
-
-				const today = Date.now(); // get timestamp from today's date
-				const valid = await User.findOne({ email: user.email , emailCode: code.toString(), emailCodeExpire: { $gt: today } })
-
-				if(!valid){
-					return next(new ErrorResponse('Error!', 403, ['invalid verification code']))
-				}
-
-				user.emailCode = undefined;
-				user.emailCodeExpire = undefined;
-				await user.save();
-
-			}
-
-			user.loginLimit = 0;
-			user.isLocked = false;
-			await user.save();
-		
-			// save request user object
-			req.user = user;
-		
-			const message = 'successful';
-			sendTokenResponse(user, message, 200, res);
-
-		}
-
-	}
-
-	if(user.isSuper){
-
-		user.loginLimit = 0;
-		user.isLocked = false;
-		await user.save();
-	
-		// save request user object
-		req.user = user;
-	
-		const message = 'successful';
-		sendTokenResponse(user, message, 200, res);
-
-	}
+	const message = 'successful';
+	sendTokenResponse(user, message, 200, res);
 
 })
 
@@ -483,16 +370,6 @@ export const updatePassword = asyncHandler(async (req: Request, res:Response, ne
 
 	if(!isMatched){
 		return next(new ErrorResponse('Error', 400, ['invalid credentials']))
-	}
-
-	const verification = await Verification.findOne({ _id: user.verification });
-
-	if(!verification){
-		return next(new ErrorResponse('Error', 500, ['kyc verification is required']))
-	}
-
-	if(verification.basic === 'pending'){
-		return next(new ErrorResponse('Error', 500, ['kyc basic verification is required']))
 	}
 
 	if(!code && !user.isSuper){
@@ -896,15 +773,7 @@ const sendTokenResponse = async (user: any, message: string, statusCode: number,
 		isUser: _user.isUser,
 		isActive: _user.isActive,
 		passwordType: _user.passwordType,
-		country: _user.country,
-		verification: !user.isSuper ? {
-			basic: _user.verification.basic,
-			ID: _user.verification.ID,
-			address: _user.verification.address,
-			face: _user.verification.face,
-			sms: _user.verification.sms,
-			email: _user.verification.email,
-		}: null
+		country: _user.country
 	}
 
 	res.status(statusCode).cookie('token', token, options).json({

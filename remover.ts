@@ -8,10 +8,8 @@ config();
 // models
 import Role from './src/models/Role.model'
 import Country from './src/models/Country.model'
-import Announcement from './src/models/Announcement.model'
 import User from './src/models/User.model'
-import Kyc from './src/models/Kyc.model'
-import Verification from './src/models/Verification.model'
+import Language from './src/models/Language.model'
 
 const options: object = {
 
@@ -49,10 +47,8 @@ const deleteData = async () : Promise<void> => {
 
         await Role.deleteMany();
         await User.deleteMany();
-        await Announcement.deleteMany();
+        await Language.deleteMany();
         await Country.deleteMany();
-        await Verification.deleteMany();
-        await Kyc.deleteMany();
 
         console.log(colors.red.inverse('data destroyed successfully...'));
         process.exit();
@@ -75,12 +71,9 @@ export const deleteDBData = async () : Promise<void> => {
         await connectDB();
 
         await Role.deleteMany();
-        await Role.deleteMany();
         await User.deleteMany();
-        await Announcement.deleteMany();
+        await Language.deleteMany();
         await Country.deleteMany();
-        await Verification.deleteMany();
-        await Kyc.deleteMany();
 
         console.log(colors.red.inverse('data destroyed successfully...'));
         process.exit();

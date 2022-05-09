@@ -7,7 +7,7 @@ import {
     getStates
 } from '../../../controllers/country.controller';
 
-import advancedResults from '../../../middleware/advanced.mw';
+import advancedResults from '../../../middleware/adanced.mw';
 
 const router = express.Router({ mergeParams: true });
 

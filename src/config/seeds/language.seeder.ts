@@ -33,7 +33,7 @@ export const seedLanguages = async () => {
 export const cacheLanguages = async (type: string = 'd'): Promise<void> => {
 
     if(type === 'd'){
-        redis.deleteData(CacheKeys.Banks)
+        redis.deleteData(CacheKeys.Countries)
     }
 
     if(type === 'i'){

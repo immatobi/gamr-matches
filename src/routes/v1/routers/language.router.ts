@@ -6,7 +6,7 @@ import {
     getLanguage
 } from '../../../controllers/language.controller';
 
-import advancedResults from '../../../middleware/advanced.mw';
+import advancedResults from '../../../middleware/adanced.mw';
 
 const router = express.Router({ mergeParams: true });
 

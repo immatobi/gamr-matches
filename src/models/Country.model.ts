@@ -1,28 +1,42 @@
-
-import mongoose from 'mongoose';
+import crypto from 'crypto';
+import mongoose, { ObjectId } from 'mongoose';
+import slugify from 'slugify';
 
 
 interface ICountryModel {
     build(attrs: any): ICountryDoc,
+    findByName(name: string): ICountryDoc;
+    findByCode(code: string): ICountryDoc;
+    getCountry(id: any): ICountryDoc;
 }
 
 interface ICountryDoc extends ICountryModel, mongoose.Document {
+    
     name: string;
     code2: string;
     code3: string;
     capital: string;
     region: string;
-    subRegion: string;
+    subregion: string;
     currencyCode: string;
     currencyImage: string;
     phoneCode: string;
     flag: string;
     states: Array<object>;
     slug: string;
-    users: Array<mongoose.Schema.Types.ObjectId>;
+
+    // time stamps
+    createdAt: string;
+    updatedAt: string;
+    _version: number;
+    _id: mongoose.Schema.Types.ObjectId;
+    id: mongoose.Schema.Types.ObjectId;
 
     // props
     build(attrs: any): ICountryDoc;
+    findByName(name: string): ICountryDoc;
+    findByCode(code: string): ICountryDoc;
+    getCountry(id: any): ICountryDoc;
 }
 
 const CountrySchema = new mongoose.Schema(
@@ -53,7 +67,7 @@ const CountrySchema = new mongoose.Schema(
             required: [false, 'Region is region']
         },
 
-        subRegion: {
+        subregion: {
             type: String,
             required: [false, 'sub region is required']
         },
@@ -88,13 +102,6 @@ const CountrySchema = new mongoose.Schema(
 
         slug: String,
 
-        users: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-            },
-        ]
-
     },
     {
 
@@ -114,8 +121,20 @@ CountrySchema.set('toJSON', {getters: true, virtuals: true});
 
 // Encrypt password using bcrypt
 CountrySchema.pre<ICountryDoc>('save', async function (next) {
+    this.slug = slugify(this.name, { lower: true });
 	next()
 });
+
+CountrySchema.statics.findByName = function (name: string) {
+    return this.findOne({name: name});
+}
+
+CountrySchema.statics.findByCode = function (code: string) {
+    return this.findOne({phoneCode: code});
+}
+CountrySchema.statics.getCountry = function (id: any) {
+    return this.findById({id});
+}
 
 // define the model
 const Country = mongoose.model<ICountryDoc>('Country', CountrySchema);
