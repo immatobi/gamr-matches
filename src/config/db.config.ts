@@ -4,8 +4,6 @@ import { generate } from '../utils/random.util'
 
 import redis from '../middleware/redis.mw'
 
-const cert = `${__dirname.split('config')[0]}_data/ca-certificate.crt`;
-
 mongoose.Promise = global.Promise;
 
 const options: object = {
@@ -39,18 +37,8 @@ const connectDB = async (): Promise<void> => {
     await connectRedis();
 
     //connect to mongoose
-    if(process.env.AUTH_TYPE === 'cloud'){
-
-        const cloudDBString = process.env.MONGODB_CLOUD_URI + `&tls=true&tlsCAFile=${cert}`
-        const dbConn = await mongoose.connect(cloudDBString || '', options);
-        console.log(colors.cyan.bold.underline(`Database connected: ${dbConn.connection.host}`));
-        
-    }else{
-
-        const dbConn = await mongoose.connect(process.env.MONGODB_URI || '', options);
-        console.log(colors.cyan.bold.underline(`Database connected: ${dbConn.connection.host}`));
-
-    }
+    const dbConn = await mongoose.connect(process.env.MONGODB_URI || '', options);
+    console.log(colors.cyan.bold.underline(`Database connected: ${dbConn.connection.host}`));
 
 }
 
