@@ -1,7 +1,7 @@
 {
-  "name": "xpresschain-identity-service",
+  "name": "gamr-matches-assesment",
   "version": "1.0.0",
-  "description": "xpresschain identity service",
+  "description": "Gamr Matches Assesment",
   "main": "server.js",
   "directories": {
     "test": "./tests"
