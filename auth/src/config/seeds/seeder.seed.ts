@@ -5,6 +5,8 @@ import colors from 'colors';
 
 import { seedRoles, cacheRoles } from './role.seed'
 import { seedUsers } from './user.seed'
+import { seedCountry, cacheCountries } from './country.seed';
+import { seedLanguages, cacheLanguages } from './language.seeder';
 
 
 // role functions
@@ -36,6 +38,12 @@ export const seedData = async (): Promise<void> => {
     await seedRoles();
     await cacheRoles('d');
     await seedUsers();
+    await seedCountry();
+    await seedLanguages();
+
+    // cache
+    await cacheCountries('d');
+    await cacheLanguages('d');
 
     // attach superadmin role
     await attachSuperRole();
