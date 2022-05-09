@@ -1,0 +1,16 @@
+[
+    {
+        "firstName": "Super",
+        "lastName": "Administrator",
+        "email": "admin@xpresschain.co",
+        "password": "#_xpAdmin1@",
+        "isSuper": true,
+        "isActivated": true,
+        "isAdmin": false,
+        "isTalent": false,
+        "isBusiness": false,
+        "isManager": false,
+        "isUser": true,
+        "isActive": true
+    }
+]
