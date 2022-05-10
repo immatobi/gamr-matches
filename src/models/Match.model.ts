@@ -2,23 +2,49 @@ import mongoose, { ObjectId } from 'mongoose'
 import slugify from 'slugify'
 
 // interface that describes the properties the model has
-interface IRoleModel{
+interface IMatchModel{
 
     // functions
-    findByName(name: string): IRoleDoc;
-    getRoleName(id: ObjectId): IRoleDoc;
-    getAllRoles(): any
+    findByName(name: string): IMatchDoc;
+    getMatchName(id: ObjectId): IMatchDoc;
+    getAllMatches(): any
 
 }
 
 // interface that describes the properties that the Doc has
-interface IRoleDoc extends IRoleModel, mongoose.Document{
+interface IMatchDoc extends IMatchModel, mongoose.Document{
 
-    name: string;
-    description: string;
-    slug: string;
-    resources: Array<mongoose.Schema.Types.ObjectId | any>;
-    users: Array<mongoose.Schema.Types.ObjectId | any>;
+    matchType: string;
+    season: string;
+    stage: string;
+    dateOfPlay: Date | number | any;
+    startTime: string;
+    endTime: string;
+    stadium: string;
+    score: Array<{ team: mongoose.Schema.Types.ObjectId | any, count: number }>
+    lineups: Array<{ team: mongoose.Schema.Types.ObjectId | any, players: Array<any>  }>
+    stats: Array<{
+        team: mongoose.Schema.Types.ObjectId | any,
+        details: {
+
+            shots: string;
+            passes: string;
+            passAccuracy: string;
+            shotOnTarget: string;
+            fouls: string;
+            redCards: string;
+            yellowCards: string;
+            corner: string;
+            cross: string;
+            possession: string;
+            offsides: string;
+
+        }
+    }>
+    homeTeam: mongoose.Schema.Types.ObjectId | any;
+    country: mongoose.Schema.Types.ObjectId | any;
+    teams: Array<mongoose.Schema.Types.ObjectId | any>;
+    fixture: mongoose.Schema.Types.ObjectId | any;
 
     // time stamps
     createdAt: string;
@@ -28,43 +54,118 @@ interface IRoleDoc extends IRoleModel, mongoose.Document{
     id: mongoose.Schema.Types.ObjectId;
 
     // functions
-    findByName(name: string): IRoleDoc;
-    getRoleName(id: ObjectId): IRoleDoc;
-    getAllRoles(): any
+    findByName(name: string): IMatchDoc;
+    getMatchName(id: ObjectId): IMatchDoc;
+    getAllMatchs(): any
 
 
 }
 
-const RoleSchema = new mongoose.Schema (
+const MatchSchema = new mongoose.Schema (
 
     {
 
-        name: {
+        matchType: {
             type: String,
-            required: [true, 'please add a role name']
+            required: [true, 'match type is required'],
+            enum: ['home', 'away']
         },
 
-        description: {
-            type: String,
-            required: [true, 'please add a role description'],
-            maxlength: [255, 'role description cannot be more than 255 characters']
+        season: {
+            type: String
         },
 
-        slug: String,
+        stage: {
+            type: String
+        },
 
-        users: [
+        dateOfPlay: {
+            type: mongoose.Schema.Types.Mixed,
+            required: [true, 'match date of play is required']
+        },
+
+        startTime: {
+            type: String,
+            required: [true, 'match start time is required']
+        },
+
+        endTime: {
+            type: String
+        },
+
+        stadium: {
+            type: String
+        },
+
+        score: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
+                team: {
+                    type: mongoose.Schema.Types.ObjectId
+                },
+                count: {
+                    type: Number
+                }
             }
         ],
 
-        resources: [
+        lineups: [
+            {
+                team: {
+                    type: mongoose.Schema.Types.ObjectId
+                },
+                players: [
+                    {
+                        type: String
+                    }
+                ]
+            }
+        ],
+
+        stats: [
+            {
+                team: {
+                    type: mongoose.Schema.Types.ObjectId
+                },
+                details: {
+
+                    shots: String,
+                    passes: String,
+                    passAccuracy: String,
+                    shotOnTarget: String,
+                    fouls: String,
+                    redCards: String,
+                    yellowCards: String,
+                    corner: String,
+                    cross: String,
+                    possession: String,
+                    offsides: String,
+
+                }
+            }
+        ],
+
+        homeTeam: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Team'
+        },
+
+        country: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Country'
+        },
+
+        teams: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Resource'
+                ref: 'Team'
             }
-        ]
+        ],
+
+        fixture: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Fixture'
+        },
+       
 
     },
 
@@ -80,26 +181,25 @@ const RoleSchema = new mongoose.Schema (
 
 )
 
-RoleSchema.set('toJSON', { getters: true, virtuals: true });
+MatchSchema.set('toJSON', { getters: true, virtuals: true });
 
-RoleSchema.pre<IRoleDoc>('save', async function(next){
-    this.slug = slugify(this.name, { lower: true });
+MatchSchema.pre<IMatchDoc>('save', async function(next){
     next();
 });
 
-RoleSchema.statics.findByName = (roleName) => {
-    return Role.findOne({name: roleName});
+MatchSchema.statics.findByName = (roleName) => {
+    return Match.findOne({name: roleName});
 }
 
-RoleSchema.statics.getRoleName = (roleId) => {
-    return Role.findById(roleId);
+MatchSchema.statics.getMatchName = (roleId) => {
+    return Match.findById(roleId);
 }
 
-RoleSchema.statics.getAllRoles = () => {
-    return Role.find({});
+MatchSchema.statics.getAllMatches = () => {
+    return Match.find({});
 }
 
 // define the model constant
-const Role = mongoose.model<IRoleDoc>('Role', RoleSchema);
+const Match = mongoose.model<IMatchDoc>('Match', MatchSchema);
 
-export default Role;
+export default Match;

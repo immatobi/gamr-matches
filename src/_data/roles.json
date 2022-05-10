@@ -12,8 +12,8 @@
     },
     
     {
-        "name": "user",
-        "description": "everyone on the platform are considered to be a user",
-        "slug": "user"
+        "name": "manager",
+        "description": "manager has the ability to manage leauges, teams(clubs) and fixtures",
+        "slug": "manager"
     }
 ]

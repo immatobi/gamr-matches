@@ -2,23 +2,24 @@ import mongoose, { ObjectId } from 'mongoose'
 import slugify from 'slugify'
 
 // interface that describes the properties the model has
-interface IRoleModel{
+interface IFixtureModel{
 
     // functions
-    findByName(name: string): IRoleDoc;
-    getRoleName(id: ObjectId): IRoleDoc;
-    getAllRoles(): any
+    findByName(name: string): IFixtureDoc;
+    getFixtureName(id: ObjectId): IFixtureDoc;
+    getAllFixtures(): any
 
 }
 
 // interface that describes the properties that the Doc has
-interface IRoleDoc extends IRoleModel, mongoose.Document{
+interface IFixtureDoc extends IFixtureModel, mongoose.Document{
 
     name: string;
     description: string;
     slug: string;
-    resources: Array<mongoose.Schema.Types.ObjectId | any>;
-    users: Array<mongoose.Schema.Types.ObjectId | any>;
+
+    matches: Array<mongoose.Schema.Types.ObjectId | any>;
+    league: mongoose.Schema.Types.ObjectId | any;
 
     // time stamps
     createdAt: string;
@@ -28,43 +29,39 @@ interface IRoleDoc extends IRoleModel, mongoose.Document{
     id: mongoose.Schema.Types.ObjectId;
 
     // functions
-    findByName(name: string): IRoleDoc;
-    getRoleName(id: ObjectId): IRoleDoc;
-    getAllRoles(): any
+    findByName(name: string): IFixtureDoc;
+    getFixtureName(id: ObjectId): IFixtureDoc;
+    getAllFixtures(): any
 
 
 }
 
-const RoleSchema = new mongoose.Schema (
+const FixtureSchema = new mongoose.Schema (
 
     {
 
         name: {
-            type: String,
-            required: [true, 'please add a role name']
+            type: String
         },
 
         description: {
             type: String,
-            required: [true, 'please add a role description'],
-            maxlength: [255, 'role description cannot be more than 255 characters']
+            maxlength: [300, 'description cannot be more than 300 characters']
         },
 
         slug: String,
 
-        users: [
+        matches: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
+                ref: 'Match'
             }
         ],
 
-        resources: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Resource'
-            }
-        ]
+        league: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'League'
+        }
 
     },
 
@@ -80,26 +77,26 @@ const RoleSchema = new mongoose.Schema (
 
 )
 
-RoleSchema.set('toJSON', { getters: true, virtuals: true });
+FixtureSchema.set('toJSON', { getters: true, virtuals: true });
 
-RoleSchema.pre<IRoleDoc>('save', async function(next){
+FixtureSchema.pre<IFixtureDoc>('save', async function(next){
     this.slug = slugify(this.name, { lower: true });
     next();
 });
 
-RoleSchema.statics.findByName = (roleName) => {
-    return Role.findOne({name: roleName});
+FixtureSchema.statics.findByName = (roleName) => {
+    return Fixture.findOne({name: roleName});
 }
 
-RoleSchema.statics.getRoleName = (roleId) => {
-    return Role.findById(roleId);
+FixtureSchema.statics.getFixtureName = (roleId) => {
+    return Fixture.findById(roleId);
 }
 
-RoleSchema.statics.getAllRoles = () => {
-    return Role.find({});
+FixtureSchema.statics.getAllFixtures = () => {
+    return Fixture.find({});
 }
 
 // define the model constant
-const Role = mongoose.model<IRoleDoc>('Role', RoleSchema);
+const Fixture = mongoose.model<IFixtureDoc>('Fixture', FixtureSchema);
 
-export default Role;
+export default Fixture;
