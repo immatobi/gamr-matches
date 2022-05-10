@@ -16,6 +16,7 @@ interface ILeagueDoc extends ILeagueModel, mongoose.Document{
 
     name: string;
     description: string;
+    code: string;
     slug: string;
 
     teams: Array<mongoose.Schema.Types.ObjectId | any>;
@@ -49,6 +50,10 @@ const LeagueSchema = new mongoose.Schema (
         description: {
             type: String,
             maxlength: [300, 'description cannot be more than 100 characters']
+        },
+
+        code: {
+            type: String
         },
 
         slug: String,

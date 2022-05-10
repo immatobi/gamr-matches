@@ -1,11 +1,13 @@
 export enum CacheKeys {
-    Roles = 'xpch.roles',
-    Anns = 'xpch.announcements',
-    Users = 'xpch.users',
-    Countries = 'xpch.countries',
-    Country = 'xpch.country',
-    Languages = 'xpch.languages',
-    Language = 'xpch.language',
+    Roles = 'gamr.roles',
+    Anns = 'gamr.announcements',
+    Users = 'gamr.users',
+    Countries = 'gamr.countries',
+    Country = 'gamr.country',
+    Languages = 'gamr.languages',
+    Language = 'gamr.language',
+    Teams = 'gamr.teams',
+    Leagues = 'gamr.leagues',
 }
 
 export const computeKey = (env: string | undefined, key: string): string => {

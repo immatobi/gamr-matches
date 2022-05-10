@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Arsenal",
+        "description": "The official arsenal club team",
+        "code": "ARS",
+        "leagues": ["UEFA", "EPL", "LLA"]
+    },
+    {
+        "name": "Aston Villa",
+        "description": "The official aston villa club team",
+        "code": "ASV",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Chelsea",
+        "description": "The official chelsea club team",
+        "code": "ASV",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Manchester City",
+        "description": "The official man-city club team",
+        "code": "MCY",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Manchester United",
+        "description": "The official man-united club team",
+        "code": "MUD",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Newcastle United",
+        "description": "The official newcastale-united club team",
+        "code": "NCD",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Everton",
+        "description": "The official everton club team",
+        "code": "EVN",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Liverpool",
+        "description": "The official liverpool club team",
+        "code": "LVP",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "West Ham",
+        "description": "The official west-ham club team",
+        "code": "WHM",
+        "leagues": ["UEFA", "EPL"]
+    },
+    {
+        "name": "Fulham",
+        "description": "The official fulham club team",
+        "code": "FLM",
+        "leagues": ["UEFA", "EPL"]
+    }
+]

@@ -7,6 +7,8 @@ import { seedRoles, cacheRoles } from './role.seed'
 import { seedUsers } from './user.seed'
 import { seedCountry, cacheCountries } from './country.seed';
 import { seedLanguages, cacheLanguages } from './language.seeder';
+import { seedLeagues, cacheLeagues } from './league.seed'
+import { seedTeams, cacheTeams } from './team.seed'
 
 
 // role functions
@@ -36,14 +38,18 @@ const attachSuperRole = async (): Promise<void> => {
 export const seedData = async (): Promise<void> => {
 
     await seedRoles();
-    await cacheRoles('d');
     await seedUsers();
     await seedCountry();
     await seedLanguages();
+    await seedLeagues();
+    await seedTeams();
 
     // cache
+    await cacheRoles('d');
     await cacheCountries('d');
     await cacheLanguages('d');
+    await cacheLeagues('d');
+    await cacheTeams('d');
 
     // attach superadmin role
     await attachSuperRole();

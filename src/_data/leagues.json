@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Premier League",
+        "code": "EPL",
+        "description": "The official FIFA premier league"
+    },
+    {
+        "name": "A-League Men",
+        "code": "ALM",
+        "description": "The official FIFA A-League Men"
+    },
+    {
+        "name": "LaLiga",
+        "code": "LLA",
+        "description": "The official FIFA LaLiga league"
+    },
+    {
+        "name": "UEFA Champions League",
+        "code": "UEFA",
+        "description": "The official FIFA UEFA Champions league"
+    },
+    {
+        "name": "Serie A",
+        "code": "SAT",
+        "description": "The official FIFA Serie A league"
+    }
+]
