@@ -101,9 +101,11 @@ export const updateLeague = asyncHandler(async (req: Request, res: Response, nex
     await league.save();
 
     if(!code && name){
-        const spt = name.split(' ');
-        _genCode = spt[0] + spt[1] + spt[3];
+        _genCode = name.charAt(0) + name.charAt(1) + name.charAt(2);
         league.code = _genCode.toUpperCase()
+        await league.save();
+    }else{
+        league.code = code
         await league.save();
     }
 

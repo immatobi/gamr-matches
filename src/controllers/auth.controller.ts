@@ -755,7 +755,6 @@ const sendTokenResponse = async (user: any, message: string, statusCode: number,
 
 	const _user = await User.findOne({ email: user.email }).populate([
 		{ path: 'roles', select: '_id name' },
-		{ path: 'verification' },
 		{ path: 'country' }
 	]);
 

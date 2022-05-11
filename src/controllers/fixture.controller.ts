@@ -98,7 +98,7 @@ export const addFixture = asyncHandler(async (req: Request, res: Response, next:
 // access   Public
 export const addMatches = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	
-    const matches: Array<ObjectId> = req.body;
+    const { matches } = req.body;
 
     if(!matches || matches.length <= 0){
         return next(new ErrorResponse('Error', 400, ['a list of matches is required']));
@@ -172,6 +172,26 @@ export const updateLeague = asyncHandler(async (req: Request, res: Response, nex
     league.fixtures.push(league._id);
     await league.save();
 
+    // update all matches league
+
+    if(fixture.matches.length > 0){
+
+        for(let i = 0; i < fixture.matches.length; i++){
+
+            const match = await Match.findOne({ _id: fixture.matches[i] });
+    
+            if(match){
+    
+                match.league = league._id;
+                await match.save();
+    
+            }
+    
+        }
+
+    }
+    
+
     await redis.deleteData(CacheKeys.Fixtures);
 
 
@@ -184,7 +204,6 @@ export const updateLeague = asyncHandler(async (req: Request, res: Response, nex
     })
 
 })
-
 
 
 /** 

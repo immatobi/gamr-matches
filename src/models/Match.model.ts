@@ -116,7 +116,8 @@ const MatchSchema = new mongoose.Schema (
         score: [
             {
                 team: {
-                    type: mongoose.Schema.Types.ObjectId
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Team"
                 },
 
                 type: {
@@ -146,7 +147,8 @@ const MatchSchema = new mongoose.Schema (
         stats: [
             {
                 team: {
-                    type: mongoose.Schema.Types.ObjectId
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Team"
                 },
                 details: {
 

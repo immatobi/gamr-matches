@@ -10,6 +10,10 @@ import Role from './src/models/Role.model'
 import Country from './src/models/Country.model'
 import User from './src/models/User.model'
 import Language from './src/models/Language.model'
+import League from './src/models/League.model'
+import Match from './src/models/Match.model'
+import Fixture from './src/models/Fixture.model'
+import Team from './src/models/Team.model'
 
 const options: object = {
 
@@ -49,6 +53,10 @@ const deleteData = async () : Promise<void> => {
         await User.deleteMany();
         await Language.deleteMany();
         await Country.deleteMany();
+        await League.deleteMany();
+        await Match.deleteMany();
+        await Fixture.deleteMany();
+        await Team.deleteMany();
 
         console.log(colors.red.inverse('data destroyed successfully...'));
         process.exit();
@@ -74,6 +82,10 @@ export const deleteDBData = async () : Promise<void> => {
         await User.deleteMany();
         await Language.deleteMany();
         await Country.deleteMany();
+        await League.deleteMany();
+        await Match.deleteMany();
+        await Fixture.deleteMany();
+        await Team.deleteMany();
 
         console.log(colors.red.inverse('data destroyed successfully...'));
         process.exit();

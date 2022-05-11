@@ -20,11 +20,14 @@ import { validateChannels as vcd } from '../../../middleware/header.mw';
 const roles = ['superadmin', 'admin'];
 const allRoles = ['superadmin', 'admin', 'manager'];
 
-router.get('/', vcd, protect, authorize(allRoles), advanced(Team, [], CacheKeys.Teams, 'name', true), getTeams);
+router.get('/', vcd, protect, authorize(allRoles), advanced(Team, [
+    { path: 'leagues' },
+    { path: 'matches.league' }
+], CacheKeys.Teams, 'name', true), getTeams);
 router.get('/:id', vcd, protect, authorize(allRoles), getTeam);
 router.post('/', vcd, protect, authorize(allRoles), addTeam);
 router.put('/:id', vcd, protect, authorize(allRoles), updateTeam);
-router.put('/update-league/:id', vcd, protect, authorize(allRoles), updateLeague);
+router.put('/add-league/:id', vcd, protect, authorize(allRoles), updateLeague);
 
 
 export default router;

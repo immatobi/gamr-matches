@@ -13,9 +13,11 @@ import { generate } from '../utils/random.util';
 
 import dayjs, { Dayjs } from 'dayjs'
 import customparse from 'dayjs/plugin/customParseFormat';
+import duration from 'dayjs/plugin/duration';
 import Country from '../models/Country.model';
 import redis from '../middleware/redis.mw';
 dayjs.extend(customparse);
+dayjs.extend(duration)
 
 // @desc    Get All Matches
 // @route   GET /api/v1/matches
@@ -34,6 +36,7 @@ export const getMatch = asyncHandler(async (req: Request, res: Response, next: N
         { path: 'lineups.team' },
         { path: 'stats.team' },
         { path: 'homeTeam' },
+        { path: 'league' },
         { path: 'country' },
         { path: 'teams' },
         { path: 'fixture' },
@@ -41,6 +44,18 @@ export const getMatch = asyncHandler(async (req: Request, res: Response, next: N
 
     if(!match){
         return next(new ErrorResponse('Error', 404, ['match does not exist']))
+    }
+
+    if(req.query.format && req.query.format.toString() === 'true'){
+
+        const date = dayjs(match.dateOfPlay);
+        const start = dayjs(match.startTime);
+        const end = dayjs(match.endTime);
+
+        match.dateOfPlay = date.format('ddd DD MMMM, YYYY');
+        match.startTime = start.format('hh:mm:ss A');
+        match.endTime = end.format('hh:mm:ss A');
+
     }
 
     res.status(200).json({
@@ -106,8 +121,8 @@ export const addMatch = asyncHandler(async (req: Request, res: Response, next: N
         return next (new ErrorResponse('Error', 400, [`${timeData.message}`]));
     }
 
-    const dayTime = dayjs(`${timeData.hour}:${timeData.minutes}:${timeData.seconds}`);
-    const ninety = dayTime.add(90, 'minute') // add 90 minutes to the start time
+    const dayTime = dayjs(`${date} ${timeData.hour}:${timeData.minutes}:${timeData.seconds}`);
+    const ninety = dayTime.add(dayjs.duration({ minutes : 90})) // add 90 minutes to the start time
 
     // create match
     const match = await Match.create({
@@ -181,7 +196,7 @@ export const addMatch = asyncHandler(async (req: Request, res: Response, next: N
     await redis.deleteData(CacheKeys.Matches);
 
     // send match reminders: run every seconds of every minute of every hour of every day of month of every month of every day of week
-    const cron: string = `${timeData.seconds} */${timeData.minutes} */${timeData.hour} ${dateData.date.date()} ${(parseInt(dateData.date.month()) + 1 )} ${dateData.date.day()}`;
+    const cron = `${timeData.seconds === '00' ? '*' : timeData.seconds} ${timeData.minutes === '00' ? '*' : '*/'+timeData.minutes} ${timeData.hour === '00' ? '*' : '*/'+timeData.hour} ${dateData.date.date()} ${(parseInt(dateData.date.month()) + 1 )} ${dateData.date.day()}`;
     await sendMatchReminder(cron, dayTime, match._id, user?.email);
 	
     res.status(200).json({
@@ -199,6 +214,8 @@ export const addMatch = asyncHandler(async (req: Request, res: Response, next: N
 // access   Public
 export const updateMatch = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	
+    const user = req.user;
+
     const { type, season, stage, date, startTime, stadium, countryId, leagueId }: IAddMatch = req.body;
 
     const match = await Match.findOne({ _id: req.params.id });
@@ -251,17 +268,31 @@ export const updateMatch = asyncHandler(async (req: Request, res: Response, next
 
     if(startTime){
 
+        if(!date){
+            return next (new ErrorResponse('Error', 400, [`date is required`]));
+        }
+
+        const dateData = await getDateTimeStamp(date);
+
+        if(dateData.error === true){
+            return next (new ErrorResponse('Error', 400, [`${dateData.message}`]));
+        }
+
         const timeData = formatTime(startTime);
 
         if(timeData.error === true){
             return next (new ErrorResponse('Error', 400, [`${timeData.message}`]));
         }
 
-        const dayTime = dayjs(`${timeData.hour}:${timeData.minutes}:${timeData.seconds}`);
-        const ninety = dayTime.add(90, 'minute') // add 90 minutes to the start time
+        const dayTime = dayjs(`${date} ${timeData.hour}:${timeData.minutes}:${timeData.seconds}`);
+        const ninety = dayTime.add(dayjs.duration({ minutes : 90})) // add 90 minutes to the start time
 
         match.startTime = dayTime;
         match.endTime = ninety;
+
+        // send match reminders: run every seconds of every minute of every hour of every day of month of every month of every day of week
+        const cron = `${timeData.seconds === '00' ? '*' : timeData.seconds} ${timeData.minutes === '00' ? '*' : '*/'+timeData.minutes} ${timeData.hour === '00' ? '*' : '*/'+timeData.hour} ${dateData.date.date()} ${(parseInt(dateData.date.month()) + 1 )} ${dateData.date.day()}`;
+        await sendMatchReminder(cron, dayTime, match._id, user?.email);
 
     }
 
@@ -298,9 +329,7 @@ export const updateScore = asyncHandler(async (req: Request, res: Response, next
         return next (new ErrorResponse('Error', 400, ["score type is required"]));
     }
 
-    const match = await Match.findOne({ _id: req.params.id }).populate([
-        { path: 'score.team' }
-    ]);
+    const match = await Match.findOne({ _id: req.params.id });
 
     if(!match){
         return next (new ErrorResponse('Error', 404, ["match does not exist"]));
@@ -318,10 +347,10 @@ export const updateScore = asyncHandler(async (req: Request, res: Response, next
 
     for(let i = 0; i < match.score.length; i++){
 
-        if(match.score[i].team._id === team._id){
+        if(match.score[i].team.toString() === team._id.toString()){
 
             match.score[i].type = type ? type : 'ft';
-            match.score[i].count = parseInt(score); 
+            match.score[i].count = score;
             await match.save();
 
         }
@@ -330,10 +359,12 @@ export const updateScore = asyncHandler(async (req: Request, res: Response, next
 
     await redis.deleteData(CacheKeys.Matches);
 
+    const _m = await Match.findOne({ _id: match._id }).populate([ { path: 'stats.team' } ]);
+
     res.status(200).json({
         error: false,
         errors: [],
-        data: match.score,
+        data: _m?.score,
         message: 'successful',
         status: 200
     })
@@ -345,8 +376,7 @@ export const updateScore = asyncHandler(async (req: Request, res: Response, next
 // access   Public
 export const updateStats = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	
-    const { teamId  } = req.body;
-    const stats: Partial<IMatchStats> = req.body;
+    const { teamId, stats } = req.body;
 
     const match = await Match.findOne({ _id: req.params.id });
 
@@ -364,8 +394,8 @@ export const updateStats = asyncHandler(async (req: Request, res: Response, next
         return next (new ErrorResponse('Error', 500, ["match does not include team"]));
     }
 
-    const index = match.stats.findIndex((st) => st.team === team._id);
-    const existing = match.stats.find((st) => st.team === team._id);
+    const index = match.stats.findIndex((st) => st.team.toString() === team._id.toString());
+    const existing = match.stats.find((st) => st.team.toString() === team._id.toString());
 
     if(existing){
 
@@ -387,10 +417,12 @@ export const updateStats = asyncHandler(async (req: Request, res: Response, next
 
     await redis.deleteData(CacheKeys.Matches);
 
+    const _m = await Match.findOne({ _id: match._id }).populate([ { path: 'stats.team' } ]);
+
     res.status(200).json({
         error: false,
         errors: [],
-        data: match.stats,
+        data: _m?.stats,
         message: 'successful',
         status: 200
     })
@@ -405,7 +437,7 @@ export const updateLeague = asyncHandler(async (req: Request, res: Response, nex
 
 	const { code } = req.body;
 
-    const match = await Fixture.findOne({ _id: req.params.id });
+    const match = await Match.findOne({ _id: req.params.id });
 
     if(!match){
         return next(new ErrorResponse('Error', 404, ['match does not exist']));

@@ -122,12 +122,12 @@ const formatDate = (date: string): { year: string, month: string, day: string } 
 
     let dateSplit: Array<string> = [];
     
-    if(strIncludesEs6(date, '-')){
+    if(date.includes('-') === true){
         dateSplit = date.split('-');
     }
 
-    if(strIncludesEs6(date, '-')){
-        dateSplit = date.split('-');
+    if(date.includes('/') === true){
+        dateSplit = date.split('/');
     }
 
     let year: string = dateSplit[0];
@@ -146,7 +146,7 @@ export const getDateTimeStamp = async (date: string): Promise<{ error: boolean, 
         date: ''
     }
 
-    if(!strIncludesEs6(date, '-') || !strIncludesEs6(date, '/')){
+    if(date.includes('-') === false && date.includes('/') === false){
         result.error = true;
         result.message = 'date must include either \'-\' or \'/\'';
     }

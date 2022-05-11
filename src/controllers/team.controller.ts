@@ -53,6 +53,12 @@ export const addTeam = asyncHandler(async (req: Request, res: Response, next: Ne
         return next(new ErrorResponse('Error', 404, ['league does not exist']));
     }
 
+    const existing = await Team.findOne({ name: name });
+
+    if(existing){
+        return next(new ErrorResponse('Error', 404, ['team already exists']));
+    }
+
     const team = await Team.create({
         name,
         description,
