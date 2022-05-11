@@ -31,8 +31,11 @@ This Software is built with the Nodejs framework, with pure typescript as the ja
 ```
 
 ## API Documentation
-[Postman - Gamr-Matches](https://documenter.getpostman.com/view/5093497/UyxgHnqm)
+See the Application REST API documentation in the Postman link below.
+
+[API Doc. link - Gamr-Matches](https://documenter.getpostman.com/view/5093497/UyxgHnqm)
 
 
+## Metadata
 
 Version: 1.0.0  ||  License: MIT
