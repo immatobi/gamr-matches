@@ -30,4 +30,9 @@ This Software is built with the Nodejs framework, with pure typescript as the ja
 - Automatic test --> "npm run test"
 ```
 
+## API Documentation
+[Postman - Gamr-Matches](https://documenter.getpostman.com/view/5093497/UyxgHnqm)
+
+
+
 Version: 1.0.0  ||  License: MIT
