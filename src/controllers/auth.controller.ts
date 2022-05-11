@@ -328,8 +328,6 @@ export const getUser = asyncHandler(async (req: Request, res:Response, next: Nex
 
 	const _user = await User.findOne({ _id: user._id}).populate([ 
 		{ path: 'roles', select: '_id name', },
-		{ path: 'verification' },
-		{ path: 'kyc' },
 		{ path: 'country' },
 	 ]);
 
