@@ -6,6 +6,10 @@ import emailRoutes from './routers/email.router'
 import userRoutes from './routers/user.router'
 import countryRoutes from './routers/country.router'
 import languageRoutes from './routers/language.router'
+import leagueRoutes from './routers/league.router'
+import fixtureRoutes from './routers/fixture.router'
+import matchRoutes from './routers/match.router'
+import teamRoutes from './routers/team.router'
 
 
 // create router
@@ -17,6 +21,10 @@ router.use('/emails', emailRoutes);
 router.use('/users', userRoutes);
 router.use('/countries', countryRoutes);
 router.use('/language', languageRoutes);
+router.use('/leagues', leagueRoutes);
+router.use('/fixtures', fixtureRoutes);
+router.use('/matches', matchRoutes);
+router.use('/teams', teamRoutes);
 
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
 
