@@ -22,7 +22,7 @@ const router: Router = express.Router({ mergeParams: true });
 import { protect, authorize } from '../../../middleware/auth.mw';
 
 const roles = ['superadmin', 'admin']
-const allRoles = ['superadmin', 'admin', 'user'];
+const allRoles = ['superadmin', 'admin', 'manager'];
 
 router.post('/register', vcd, register);
 router.post('/login', vcd, login);
