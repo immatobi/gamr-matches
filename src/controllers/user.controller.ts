@@ -6,7 +6,6 @@ import { sendGrid } from '../utils/email.util';
 import { asyncHandler, strIncludesEs6 } from '@btffamily/xpcommon'
 import { generate } from '../utils/random.util';
 import { seedData } from '../config/seeds/seeder.seed';
-import { uploadBase64File } from '../utils/google.util'
 
 import dayjs from 'dayjs'
 import customparse from 'dayjs/plugin/customParseFormat';
