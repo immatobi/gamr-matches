@@ -14,7 +14,7 @@ interface IFixtureModel{
 // interface that describes the properties that the Doc has
 interface IFixtureDoc extends IFixtureModel, mongoose.Document{
 
-    name: string;
+    fixtureID: string;
     description: string;
     slug: string;
 
@@ -40,7 +40,7 @@ const FixtureSchema = new mongoose.Schema (
 
     {
 
-        name: {
+        fixtureID: {
             type: String
         },
 
@@ -80,7 +80,7 @@ const FixtureSchema = new mongoose.Schema (
 FixtureSchema.set('toJSON', { getters: true, virtuals: true });
 
 FixtureSchema.pre<IFixtureDoc>('save', async function(next){
-    this.slug = slugify(this.name, { lower: true });
+    this.slug = this.fixtureID;
     next();
 });
 

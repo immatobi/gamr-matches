@@ -8,6 +8,8 @@ export enum CacheKeys {
     Language = 'gamr.language',
     Teams = 'gamr.teams',
     Leagues = 'gamr.leagues',
+    Fixtures = 'gamr.fixtures',
+    Matches = 'gamr.matches',
 }
 
 export const computeKey = (env: string | undefined, key: string): string => {

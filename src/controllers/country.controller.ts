@@ -8,14 +8,14 @@ import redis from '../middleware/redis.mw'
 import Country from '../models/Country.model';
 
 // @desc    Get All Countries
-// @route   GET /api/resource/v1/countries
+// @route   GET /api/v1/countries
 // access   Public
 export const getCountries = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	res.status(200).json(res.advancedResults);
 })
 
 // @desc    Get A Country
-// @route   GET /api/resource/v1/countries/:id
+// @route   GET /api/v1/countries/:id
 // access   Public
 export const getCountry = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 

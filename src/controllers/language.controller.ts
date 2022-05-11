@@ -7,14 +7,14 @@ import redis from '../middleware/redis.mw'
 import Language from '../models/Language.model';
 
 // @desc    Get All Languages
-// @route   GET /api/resource/v1/languages
+// @route   GET /api/v1/languages
 // access   Public
 export const getLanguages = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 	res.status(200).json(res.advancedResults);
 })
 
 // @desc    Get A Language
-// @route   GET /api/resource/v1/language/:id
+// @route   GET /api/v1/language/:id
 // access   Public
 export const getLanguage = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 

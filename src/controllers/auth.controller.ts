@@ -33,7 +33,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
     const { email, password, phoneNumber, phoneCode, callback } = req.body;
 
     // find the user role
-    const role = await Role.findOne({ name: 'user' });
+    const role = await Role.findOne({ name: 'manager' });
 
     if(!role){
         return next(new ErrorResponse('An error occured. Please contact support.', 500, ['Roles not defined']));

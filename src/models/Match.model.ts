@@ -14,30 +14,32 @@ interface IMatchModel{
 // interface that describes the properties that the Doc has
 interface IMatchDoc extends IMatchModel, mongoose.Document{
 
+    round: string;
+    group: string;
     matchType: string;
+    matchID: string;
     season: string;
     stage: string;
     dateOfPlay: Date | number | any;
-    startTime: string;
-    endTime: string;
+    startTime: string | number | any;
+    endTime: string | number | any;
     stadium: string;
-    score: Array<{ team: mongoose.Schema.Types.ObjectId | any, count: number }>
+    score: Array<{ team: mongoose.Schema.Types.ObjectId | any, count: number, type: string }>
     lineups: Array<{ team: mongoose.Schema.Types.ObjectId | any, players: Array<any>  }>
     stats: Array<{
         team: mongoose.Schema.Types.ObjectId | any,
         details: {
-
-            shots: string;
-            passes: string;
-            passAccuracy: string;
-            shotOnTarget: string;
-            fouls: string;
-            redCards: string;
-            yellowCards: string;
-            corner: string;
-            cross: string;
-            possession: string;
-            offsides: string;
+            shots: number;
+            passes: number;
+            passAccuracy: number;
+            shotOnTarget: number;
+            fouls: number;
+            redCards: number;
+            yellowCards: number;
+            corner: number;
+            cross: number;
+            possession: number;
+            offsides: number;
 
         }
     }>
@@ -45,6 +47,7 @@ interface IMatchDoc extends IMatchModel, mongoose.Document{
     country: mongoose.Schema.Types.ObjectId | any;
     teams: Array<mongoose.Schema.Types.ObjectId | any>;
     fixture: mongoose.Schema.Types.ObjectId | any;
+    league: mongoose.Schema.Types.ObjectId | any;
 
     // time stamps
     createdAt: string;
@@ -65,10 +68,23 @@ const MatchSchema = new mongoose.Schema (
 
     {
 
+        round: {
+            type: String
+        },
+
+        group: {
+            type: String
+        },
+
         matchType: {
             type: String,
             required: [true, 'match type is required'],
             enum: ['home', 'away']
+        },
+
+        matchID: {
+            type: String,
+            required: [true, 'match ID is required']
         },
 
         season: {
@@ -85,12 +101,12 @@ const MatchSchema = new mongoose.Schema (
         },
 
         startTime: {
-            type: String,
+            type: mongoose.Schema.Types.Mixed,
             required: [true, 'match start time is required']
         },
 
         endTime: {
-            type: String
+            type: mongoose.Schema.Types.Mixed
         },
 
         stadium: {
@@ -102,6 +118,12 @@ const MatchSchema = new mongoose.Schema (
                 team: {
                     type: mongoose.Schema.Types.ObjectId
                 },
+
+                type: {
+                    type: String,
+                    enum: ['ht', 'ft']
+                },
+                
                 count: {
                     type: Number
                 }
@@ -128,17 +150,17 @@ const MatchSchema = new mongoose.Schema (
                 },
                 details: {
 
-                    shots: String,
-                    passes: String,
-                    passAccuracy: String,
-                    shotOnTarget: String,
-                    fouls: String,
-                    redCards: String,
-                    yellowCards: String,
-                    corner: String,
-                    cross: String,
-                    possession: String,
-                    offsides: String,
+                    shots: Number,
+                    passes: Number,
+                    passAccuracy: Number,
+                    shotOnTarget: Number,
+                    fouls: Number,
+                    redCards: Number,
+                    yellowCards: Number,
+                    corner: Number,
+                    cross: Number,
+                    possession: Number,
+                    offsides: Number,
 
                 }
             }
@@ -164,6 +186,11 @@ const MatchSchema = new mongoose.Schema (
         fixture: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Fixture'
+        },
+
+        league: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'League'
         },
        
 
