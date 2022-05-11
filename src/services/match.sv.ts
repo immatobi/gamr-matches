@@ -138,12 +138,12 @@ const formatDate = (date: string): { year: string, month: string, day: string } 
 
 }
 
-export const getDateTimeStamp = async (date: string): Promise<{ error: boolean, message: string, date: Dayjs | null }> => {
+export const getDateTimeStamp = async (date: string): Promise<{ error: boolean, message: string, date: Dayjs | any }> => {
 
-    let result: { error: boolean, message: string, date: Dayjs | null } = {
+    let result: { error: boolean, message: string, date: Dayjs | any } = {
         error: false,
         message: '',
-        date: null
+        date: ''
     }
 
     if(!strIncludesEs6(date, '-') || !strIncludesEs6(date, '/')){
@@ -163,3 +163,4 @@ export const getDateTimeStamp = async (date: string): Promise<{ error: boolean, 
     return result;
 
 }
+

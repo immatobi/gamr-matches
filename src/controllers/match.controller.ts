@@ -3,6 +3,7 @@ import ErrorResponse from '../utils/error.util';
 import { arrayIncludes, asyncHandler } from '@btffamily/xpcommon';
 import { CacheKeys, computeKey } from '../utils/cache.util'
 import { validateMatch, IAddMatch, getDateTimeStamp, formatTime, IMatchStats } from '../services/match.sv'
+import { sendMatchReminder } from '../crontab/match.cron'
 
 import Fixture from '../models/Fixture.model';
 import Team from '../models/Team.model';
@@ -56,6 +57,8 @@ export const getMatch = asyncHandler(async (req: Request, res: Response, next: N
 // @route   POST /api/v1/matches
 // access   Public
 export const addMatch = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req.user;
 
     const gen = generate(8, false); // generate match ID
 
@@ -176,6 +179,10 @@ export const addMatch = asyncHandler(async (req: Request, res: Response, next: N
     await teamAway.save();
 
     await redis.deleteData(CacheKeys.Matches);
+
+    // send match reminders: run every seconds of every minute of every hour of every day of month of every month of every day of week
+    const cron: string = `${timeData.seconds} */${timeData.minutes} */${timeData.hour} ${dateData.date.date()} ${(parseInt(dateData.date.month()) + 1 )} ${dateData.date.day()}`;
+    await sendMatchReminder(cron, dayTime, match._id, user?.email);
 	
     res.status(200).json({
         error: false,
