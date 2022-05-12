@@ -65,4 +65,8 @@ afterAll( async () => {
     // close connection
     await dbConn.connection.close();
 
+    if(process.env.NODE_ENV === 'production'){
+        deleteDBData();
+    }
+
 })

@@ -30,6 +30,16 @@ This Software is built with the Nodejs framework, with pure typescript as the ja
 - Automatic test --> "npm run test"
 ```
 
+### Important ENV variables
+```
+- MONGODB_URI : Your database connection string. Please use MongoDB
+- MONGODB_TEST_URI : Your test database connection string. Use MongoDB
+
+- REDIS_HOST: Your redis host connection string
+- REDIS_PORT: Your redis PORT
+
+```
+
 ## API Documentation
 See the Application REST API documentation in the Postman link below.
 
