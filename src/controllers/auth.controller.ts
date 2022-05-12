@@ -85,7 +85,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
 		savedPassword: password,
 		phoneNumber: phoneStr + phoneNumber.substring(1),
 		phoneCode: phoneStr,
-		userType: 'user',
+		userType: 'manager',
         isSuper: false,
 		isActivated: false,
 		isAdmin: false,
@@ -106,10 +106,10 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
                 template: 'welcome',
                 email: email,
                 preheaderText: 'welcome',
-                emailTitle: 'Welcome to XpressChain',
+                emailTitle: 'Welcome to Gamr',
                 emailSalute: `Hello ${user.firstName},`,
                 bodyOne: `
-				We\'re glad you signed up on XpressChain. Please login to your dashboard by clicking the button below.
+				We\'re glad you signed up on Gamr. Please login to your dashboard by clicking the button below.
 				`,
                 buttonUrl: `${callback}`,
                 buttonText: 'Login',
@@ -130,7 +130,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
                 preheaderText: 'activate account',
                 emailTitle: 'Activate your account',
                 emailSalute: `Hello ${user.firstName},`,
-                bodyOne: 'Activate your XpressCHain account. Click the button below to activate your account',
+                bodyOne: 'Activate your Gamr account. Click the button below to activate your account',
                 buttonUrl: `${activateUrl}`,
                 buttonText: 'Activate Account',
                 fromName: process.env.FROM_NAME

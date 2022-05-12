@@ -129,7 +129,7 @@ const UserSchema = new mongoose.Schema(
 
 		userType: {
 			type: String,
-			enum: ['admin', 'user']
+			enum: ['admin', 'manager']
 		},
 
         activationToken: String,
